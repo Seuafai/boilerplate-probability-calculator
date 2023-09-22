@@ -1,7 +1,7 @@
 import copy
 import random
+import collections
 # Consider using the modules imported above.
-
 class Hat:
   import copy
   import random
@@ -11,7 +11,6 @@ class Hat:
 
     for key, value in kwargs.items():
       self.contents.extend([key] * value)
-    #print(self.contents)
 
   def draw(self, number):
     self.number = number
@@ -26,37 +25,82 @@ class Hat:
         self.contents.remove(ball)
       return(listballs)
 
-"""
-Next, create an experiment function in prob_calculator.py (not inside the Hat class). This function should accept the following arguments:
-
-hat: A hat object containing balls that should be copied inside the function.
-expected_balls: An object indicating the exact group of balls to attempt to draw from the hat for the experiment. For example, to determine the probability of drawing 2 blue balls and 1 red ball from the hat, set expected_balls to {"blue":2, "red":1}.
-num_balls_drawn: The number of balls to draw out of the hat in each experiment.
-num_experiments: The number of experiments to perform. (The more experiments performed, the more accurate the approximate probability will be.)
-The experiment function should return a probability.
-"""
-
 def experiment(hat, expected_balls, num_balls_drawn, num_experiments):
-  import collections
-  #hat = hat.contents #
-  result_counter = 0 #counts number of matches
-  #loop each experiment?
+  #change expected_balls to list similar to Hat init.
+  eballs = []
+  for key, value in expected_balls.items():
+      eballs.extend([key] * value)
+   
+  result_counter = 0
   
-  eballs = [expected_balls]
-  for draw in range(num_experiments):
-    
-    #print(eballs)
-    listballs = hat.draw(num_balls_drawn)
-    #convert listballs into dict so the dicts can be compared using collections.counter().
-    listballs = collections.Counter(listballs) 
-    #subtract expected balls from listballs. if can, then counter +1. else moves on
-    try:
-      result = {key: eballs[key] - listballs.get(key, 0) for key in eballs}
-      #print(result)
+  for i in range(num_experiments):
+    another_hat = copy.deepcopy(hat)
+    drawn_balls = another_hat.draw(num_balls_drawn)
+    drawn_count = collections.Counter(drawn_balls)
+        
+    # Check if all expected balls were drawn
+    all_balls_drawn = True
+    for ball in eballs:
+      if drawn_count[ball] > 0:
+        drawn_count[ball] -= 1
+      else:
+        all_balls_drawn = False
+        break
+        
+    if all_balls_drawn:
       result_counter += 1
-    except ValueError:
-      print("fuck")
-     
-  #print(result_counter)
-  prob =  result_counter/num_experiments
-  return prob
+        
+  probability = result_counter / num_experiments
+  return probability
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  """
+  for x in range(num_experiments):
+    drawn_balls = hat.draw(num_balls_drawn)
+    #print(drawn_balls)
+         
+    # Calculate the difference between expected and actual balls drawn
+    for ball in eballs:
+      if ball in drawn_balls is not drawn_balls[-1]:
+        eballs.remove(ball)
+        drawn_balls.remove(ball)
+      else:
+        eballs.remove(ball)
+        drawn_balls.remove(ball)
+        result_counter += 1
+        
+    print(result_counter)
+
+  probability = result_counter / num_experiments
+  
+  return probability
+  """
